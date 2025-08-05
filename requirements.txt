@@ -15,3 +15,5 @@ python-dotenv
 tgcrypto
 uvloop
 aria2p
+shortzy
+pytz
