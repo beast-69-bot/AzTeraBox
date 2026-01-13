@@ -2,12 +2,12 @@ import aria2p
 import asyncio
 from time import time
 import typing
-try:
-    from typing import Self  # noqa: F401
-except ImportError:
-    from typing_extensions import Self  # type: ignore
-    typing.Self = Self
+import typing_extensions
+if not hasattr(typing, "Self"):
+    typing.Self = typing_extensions.Self
 from truelink import TrueLinkResolver
+from truelink.resolvers.base import BaseResolver as TruelinkBaseResolver
+import aiohttp
 from asyncio import Lock, new_event_loop, set_event_loop
 from os import path as ospath, mkdir, system, getenv
 from logging import INFO, ERROR, FileHandler, StreamHandler, basicConfig, getLogger
@@ -46,7 +46,6 @@ SPLIT_SIZE = 2 * 1024 * 1024 * 1024
 BUTTONS_PER_PAGE = 12
 __version__ = "1.0"
 StartTime = time()
-resolver = TrueLinkResolver()
 load_dotenv('terabox.env')
 
 VALID_DOMAINS = [
@@ -73,6 +72,25 @@ class Var:
     ARIA2_SECRET = getenv("ARIA2_SECRET", "F91D6A347E9B0ACFA517CC0AB634E2F4F68891E90ADAD3CE57F26EC99B18E6CFB2172C6")
     DOWNLOAD_DIR = getenv("DOWNLOAD_DIR", "downloads")  
     TERABOX_COOKIES = getenv("TERABOX_COOKIES", "").strip()
+
+def apply_truelink_cookie_patch() -> None:
+    if not Var.TERABOX_COOKIES:
+        return
+
+    async def _create_session_with_cookies(self) -> None:
+        if not self.session:
+            headers = {"User-Agent": self.USER_AGENT}
+            headers["Cookie"] = Var.TERABOX_COOKIES
+            self.session = aiohttp.ClientSession(
+                headers=headers,
+                timeout=aiohttp.ClientTimeout(total=30),
+                proxy=self.proxy,
+            )
+
+    TruelinkBaseResolver._create_session = _create_session_with_cookies
+
+apply_truelink_cookie_patch()
+resolver = TrueLinkResolver()
             
 try:
     aria2 = aria2p.API(
