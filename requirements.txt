@@ -17,3 +17,4 @@ uvloop
 aria2p
 shortzy
 pytz
+typing-extensions
