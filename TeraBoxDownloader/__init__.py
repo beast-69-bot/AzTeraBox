@@ -66,6 +66,7 @@ class Var:
     START_BUTTONS = getenv("START_BUTTONS", "UPDATES|https://t.me/BotClusters SUPPORT|https://t.me/+E90oYz68k-gxMmY0\n ABOUT|about HELP|help")
     ARIA2_SECRET = getenv("ARIA2_SECRET", "F91D6A347E9B0ACFA517CC0AB634E2F4F68891E90ADAD3CE57F26EC99B18E6CFB2172C6")
     DOWNLOAD_DIR = getenv("DOWNLOAD_DIR", "downloads")  
+    TERABOX_COOKIES = getenv("TERABOX_COOKIES", "").strip()
             
 try:
     aria2 = aria2p.API(

@@ -19,6 +19,15 @@ from TeraBoxDownloader.core.broadcast import broadcast_messages, temp, get_reada
 from TeraBoxDownloader.core.func_utils import is_fsubbed, get_fsubs, editMessage, sendMessage, new_task, is_valid_url, generate_buttons
 from TeraBoxDownloader.helper.utils import wait_for_download, add_download, handle_download_and_send
 
+def apply_terabox_cookies(headers: dict | None) -> dict | None:
+    if not Var.TERABOX_COOKIES:
+        return headers
+    header_map = dict(headers or {})
+    if any(key.lower() == "cookie" for key in header_map):
+        return header_map
+    header_map["Cookie"] = Var.TERABOX_COOKIES
+    return header_map
+
 @bot.on_message(command('start') & private)
 @new_task
 async def start_msg(client, message: Message):
@@ -171,7 +180,7 @@ async def download_handler(_, message: Message):
                 filename = getattr(result, "filename", None)
                 if not filename:
                     filename = os.path.basename(parsed_url.path) or "output.file"
-                headers = getattr(result, "headers", None)
+                headers = apply_terabox_cookies(getattr(result, "headers", None))
                 if direct_url:
                     output_path = os.path.abspath(os.path.join(Var.DOWNLOAD_DIR, filename))
                     download = add_download(direct_url, output_path, headers)
@@ -399,7 +408,7 @@ async def download_selected_files_sequentially(client, message, state, user_id):
         file = files[idx]
         fname = getattr(file, "filename", f"File_{idx+1}")
         direct_url = getattr(file, "url", None)
-        headers = getattr(file, "headers", None)
+        headers = apply_terabox_cookies(getattr(file, "headers", None))
         if not direct_url:
             await client.send_message(user_id, f"<b>❌ Could not get direct URL for {fname}. Skipping.</b>")
             continue
