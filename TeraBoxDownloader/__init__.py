@@ -1,6 +1,12 @@
 import aria2p
 import asyncio
 from time import time
+import typing
+try:
+    from typing import Self  # noqa: F401
+except ImportError:
+    from typing_extensions import Self  # type: ignore
+    typing.Self = Self
 from truelink import TrueLinkResolver
 from asyncio import Lock, new_event_loop, set_event_loop
 from os import path as ospath, mkdir, system, getenv
