@@ -11,6 +11,8 @@ import time
 import uuid
 import os
 import math
+import shutil
+
 
 def is_aria2_running():
     for proc in psutil.process_iter(attrs=["name", "cmdline"]):
@@ -31,6 +33,9 @@ def generate_download_id():
     return uuid.uuid4().hex[:16]
 
 def start_aria2():
+    if not shutil.which("aria2c"):
+        LOGS.error("aria2c binary not found in PATH. Install aria2c before starting the bot.")
+        return
     if not is_aria2_running():
         LOGS.info("🔄 Starting aria2c with logging...")
         process = subprocess.Popen(
