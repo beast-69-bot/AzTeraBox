@@ -9,6 +9,7 @@
 * `ADMINS`: ID of Admins. (Multiple admins can be used separated by space)
 * `MONGO_URI`: Get this value from [MongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
 * `LOG_CHANNEL` : A channel to log the activities of bot. add channel id and Make sure bot is an admin in the channel. 
+* `TERABOX_COOKIES`: Optional cookies string from your TeraBox session (used to pass authenticated cookies during downloads).
 
 ---
 
